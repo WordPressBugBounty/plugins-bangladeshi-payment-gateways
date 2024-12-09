@@ -18,7 +18,7 @@
             'aliases' => array(
                 0 => '9999999-dev',
             ),
-            'reference' => 'a8e02e8a5a862671f04ff00a456e2711d807a598',
+            'reference' => 'aef4cf138ab4f348cee4e2f20f7d3cd815db0877',
             'dev_requirement' => false,
         ),
         'ultradevs/bangladeshi-payment-gateways' => array(
