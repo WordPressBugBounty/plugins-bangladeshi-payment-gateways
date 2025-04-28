@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitae0da0c9d88fab24824a4c32b19c6a3f
+class ComposerStaticInit47f7c0fef846d70f6c4c0e8b040a0e80
 {
     public static $files = array (
         'b4c61c4e51dc5b30b9667984a726c468' => __DIR__ . '/../..' . '/includes/functions.php',
@@ -33,29 +33,15 @@ class ComposerStaticInitae0da0c9d88fab24824a4c32b19c6a3f
     );
 
     public static $classMap = array (
-        'Appsero\\Client' => __DIR__ . '/..' . '/appsero/client/src/Client.php',
-        'Appsero\\Insights' => __DIR__ . '/..' . '/appsero/client/src/Insights.php',
-        'Appsero\\License' => __DIR__ . '/..' . '/appsero/client/src/License.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'ultraDevs\\BDPG\\Activate' => __DIR__ . '/../..' . '/includes/Activate.php',
-        'ultraDevs\\BDPG\\Admin\\Dashboard' => __DIR__ . '/../..' . '/includes/Admin/Dashboard.php',
-        'ultraDevs\\BDPG\\Assets_Manager' => __DIR__ . '/../..' . '/includes/Assets_Manager.php',
-        'ultraDevs\\BDPG\\BDPG_Gateway' => __DIR__ . '/../..' . '/includes/BDPG_Gateway.php',
-        'ultraDevs\\BDPG\\Gateways\\Bkash' => __DIR__ . '/../..' . '/includes/Gateways/Bkash.php',
-        'ultraDevs\\BDPG\\Gateways\\Nagad' => __DIR__ . '/../..' . '/includes/Gateways/Nagad.php',
-        'ultraDevs\\BDPG\\Gateways\\Rocket' => __DIR__ . '/../..' . '/includes/Gateways/Rocket.php',
-        'ultraDevs\\BDPG\\Gateways\\Upay' => __DIR__ . '/../..' . '/includes/Gateways/Upay.php',
-        'ultraDevs\\BDPG\\Helper' => __DIR__ . '/../..' . '/includes/Helper.php',
-        'ultraDevs\\BDPG\\Review' => __DIR__ . '/../..' . '/includes/Review.php',
-        'ultraDevs\\BDPG\\Traits\\Singleton' => __DIR__ . '/../..' . '/includes/Traits/Singleton.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitae0da0c9d88fab24824a4c32b19c6a3f::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitae0da0c9d88fab24824a4c32b19c6a3f::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitae0da0c9d88fab24824a4c32b19c6a3f::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit47f7c0fef846d70f6c4c0e8b040a0e80::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit47f7c0fef846d70f6c4c0e8b040a0e80::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit47f7c0fef846d70f6c4c0e8b040a0e80::$classMap;
 
         }, null, ClassLoader::class);
     }
