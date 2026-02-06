@@ -9,7 +9,7 @@
  * Plugin Name:       Bangladeshi Payment Gateways - Make Payment Using QR Code
  * Plugin URI:        https://ultradevs.com/products/wp-plugin/bangladeshi-payment-gateways/
  * Description:       Bangladeshi Payment Gateways for WooCommerce.
- * Version:           3.0.4
+ * Version:           4.0.4
  * Author:            ultraDevs
  * Author URI:        https://ultradevs.com
  * License:           GPL v2 or later
@@ -22,7 +22,7 @@
 defined( 'ABSPATH' ) || exit( 'bYe bYe!' );
 
 // Constant.
-define( 'BD_PAYMENT_GATEWAYS_VERSION', '3.0.4' );
+define( 'BD_PAYMENT_GATEWAYS_VERSION', '4.0.4' );
 define( 'BD_PAYMENT_GATEWAYS_NAME', 'Bangladeshi Payment Gateways' );
 define( 'BD_PAYMENT_GATEWAYS_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BD_PAYMENT_GATEWAYS_DIR_URL', plugin_dir_url( __FILE__ ) );
@@ -35,6 +35,7 @@ define( 'BD_PAYMENT_GATEWAYS_MENU_SLUG', 'bangladeshi-payment-gateways' );
  * Require Composer Autoload
  */
 require_once BD_PAYMENT_GATEWAYS_DIR_PATH . 'vendor/autoload.php';
+
 
 /**
  * Bangladeshi Payment Gateways class
@@ -82,14 +83,36 @@ final class BDPaymentGateways {
 	 */
 	private function __construct() {
 
+		// Load text domain on init hook.
 		add_action( 'init', array( $this, 'load_text_domain' ) );
 
-		add_action( 'plugins_loaded', array( $this, 'init' ) );
+		add_action( 'plugins_loaded', array( $this, 'init' ), 1 );
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 
 		do_action( 'bd_payment_gateways_loaded' );
 
+		/**
+		 * Declare WooCommerce Compatibility
+		 */
+		add_action(
+			'before_woocommerce_init',
+			function () {
+				if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+					\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+						'cart_checkout_blocks',
+						__FILE__,
+						true
+					);
+
+					\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+						'custom_order_tables',
+						__FILE__,
+						true
+					);
+				}
+			}
+		);
 	}
 
 	/**
@@ -137,11 +160,21 @@ final class BDPaymentGateways {
 
 		// Activate.
 		$activate = new ultraDevs\BDPG\Activate();
+		$activate->register_migration_hook();
 
 		// Review Class.
 		$review = new ultraDevs\BDPG\Review();
 
+		// Dashboard Class.
+		new ultraDevs\BDPG\Admin\Dashboard();
+
+		// Statistics Class.
+		new ultraDevs\BDPG\Admin\Statistics();
+
 		add_action( 'woocommerce_payment_gateways', array( $this, 'add_payment_gateways' ) );
+
+		// Register block support gateways.
+		add_action( 'woocommerce_blocks_loaded', array( $this, 'init_block_gateways' ) );
 
 		if ( is_admin() ) {
 
@@ -201,6 +234,34 @@ final class BDPaymentGateways {
 	}
 
 	/**
+	 * Initialize Block Support Gateways.
+	 *
+	 * @return void
+	 */
+	public function init_block_gateways() {
+		if ( ! class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+			return;
+		}
+
+		// Block gateways.
+		$block_gateways = array(
+			ultraDevs\BDPG\Blocks\Gateways\Bkash_Blocks::get_instance(),
+			ultraDevs\BDPG\Blocks\Gateways\Rocket_Blocks::get_instance(),
+			ultraDevs\BDPG\Blocks\Gateways\Nagad_Blocks::get_instance(),
+			ultraDevs\BDPG\Blocks\Gateways\Upay_Blocks::get_instance(),
+		);
+
+		foreach ( $block_gateways as $block_gateway ) {
+			add_action(
+				'woocommerce_blocks_payment_method_type_registration',
+				function ( $payment_method_registry ) use ( $block_gateway ) {
+					$payment_method_registry->register( $block_gateway );
+				}
+			);
+		}
+	}
+
+	/**
 	 * WooCommerce Required Notice.
 	 */
 	public function woo_required_notice() {
@@ -234,7 +295,6 @@ final class BDPaymentGateways {
 		);
 
 		return $links;
-
 	}
 
 	/**
