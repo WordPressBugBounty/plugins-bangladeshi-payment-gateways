@@ -9,7 +9,7 @@
  * Plugin Name:       Bangladeshi Payment Gateways - Make Payment Using QR Code
  * Plugin URI:        https://ultradevs.com/products/wp-plugin/bangladeshi-payment-gateways/
  * Description:       Bangladeshi Payment Gateways for WooCommerce.
- * Version:           4.0.4
+ * Version:           4.1.0
  * Author:            ultraDevs
  * Author URI:        https://ultradevs.com
  * License:           GPL v2 or later
@@ -22,7 +22,7 @@
 defined( 'ABSPATH' ) || exit( 'bYe bYe!' );
 
 // Constant.
-define( 'BD_PAYMENT_GATEWAYS_VERSION', '4.0.4' );
+define( 'BD_PAYMENT_GATEWAYS_VERSION', '4.1.0' );
 define( 'BD_PAYMENT_GATEWAYS_NAME', 'Bangladeshi Payment Gateways' );
 define( 'BD_PAYMENT_GATEWAYS_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BD_PAYMENT_GATEWAYS_DIR_URL', plugin_dir_url( __FILE__ ) );
@@ -71,6 +71,13 @@ final class BDPaymentGateways {
 	public $upay = null;
 
 	/**
+	 * Bangla QR.
+	 *
+	 * @var mixed
+	 */
+	public $bangla_qr = null;
+
+	/**
 	 * Gateways.
 	 *
 	 * @var array
@@ -86,7 +93,7 @@ final class BDPaymentGateways {
 		// Load text domain on init hook.
 		add_action( 'init', array( $this, 'load_text_domain' ) );
 
-		add_action( 'plugins_loaded', array( $this, 'init' ), 1 );
+		add_action( 'plugins_loaded', array( $this, 'init' ) );
 
 		register_activation_hook( __FILE__, array( $this, 'activate' ) );
 
@@ -147,14 +154,6 @@ final class BDPaymentGateways {
 
 		$this->appsero_init_tracker();
 
-		// Payment Gateways classes.
-		$this->gateways = array(
-			ultraDevs\BDPG\Gateways\Bkash::get_instance(),
-			ultraDevs\BDPG\Gateways\Rocket::get_instance(),
-			ultraDevs\BDPG\Gateways\Nagad::get_instance(),
-			ultraDevs\BDPG\Gateways\Upay::get_instance(),
-		);
-
 		// Assets Manager Class.
 		$assets_manager = new ultraDevs\BDPG\Assets_Manager();
 
@@ -171,7 +170,7 @@ final class BDPaymentGateways {
 		// Statistics Class.
 		new ultraDevs\BDPG\Admin\Statistics();
 
-		add_action( 'woocommerce_payment_gateways', array( $this, 'add_payment_gateways' ) );
+		add_filter( 'woocommerce_payment_gateways', array( $this, 'add_payment_gateways' ) );
 
 		// Register block support gateways.
 		add_action( 'woocommerce_blocks_loaded', array( $this, 'init_block_gateways' ) );
@@ -225,10 +224,11 @@ final class BDPaymentGateways {
 	 * @return array
 	 */
 	public function add_payment_gateways( $gateways ) {
-
-		foreach ( $this->gateways as $gateway ) {
-			$gateways[] = $gateway;
-		}
+		$gateways[] = ultraDevs\BDPG\Gateways\Bkash::class;
+		$gateways[] = ultraDevs\BDPG\Gateways\Rocket::class;
+		$gateways[] = ultraDevs\BDPG\Gateways\Nagad::class;
+		$gateways[] = ultraDevs\BDPG\Gateways\Upay::class;
+		$gateways[] = ultraDevs\BDPG\Gateways\Bangla_QR::class;
 
 		return $gateways;
 	}
@@ -249,6 +249,7 @@ final class BDPaymentGateways {
 			ultraDevs\BDPG\Blocks\Gateways\Rocket_Blocks::get_instance(),
 			ultraDevs\BDPG\Blocks\Gateways\Nagad_Blocks::get_instance(),
 			ultraDevs\BDPG\Blocks\Gateways\Upay_Blocks::get_instance(),
+			ultraDevs\BDPG\Blocks\Gateways\Bangla_QR_Blocks::get_instance(),
 		);
 
 		foreach ( $block_gateways as $block_gateway ) {
